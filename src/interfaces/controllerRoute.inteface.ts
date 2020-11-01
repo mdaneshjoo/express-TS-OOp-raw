@@ -1,6 +1,7 @@
 interface ControllerRoute {
     path: string,
-    controller: any
+    controller: any,
+    middleware: any[]
 }
 
 export default ControllerRoute

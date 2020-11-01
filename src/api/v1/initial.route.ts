@@ -8,7 +8,7 @@ export default class InitialRoute {
     }
     init(routes: ControllerRoute[]) {
         routes.forEach(route => {
-            this.router.use(route.path, route.controller.router)
+            this.router.use(route.path,...route.middleware, route.controller.router)
         })
     }
 

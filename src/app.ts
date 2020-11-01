@@ -3,7 +3,8 @@ import { Application } from 'express';
 const chalk = require('chalk');
 import { Sequelize, Dialect } from 'sequelize';
 import Router from './interfaces/router.interface'
-
+import InitModels from './models/init.model'
+import config from './config'
 export default class App {
     private app: Application;
     private port: number;
@@ -11,9 +12,9 @@ export default class App {
         private dbconfig: { database: string; username: string; password: string; host: string, driver: Dialect }) {
         this.port = appConfig.port
         this.app = express()
+        this.router(appConfig.router)
         this.middlewares(appConfig.middlewares)
         this.configDB(dbconfig.database, dbconfig.username, dbconfig.password, dbconfig.host, dbconfig.driver)
-        this.router(appConfig.router)
     }
 
     private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
@@ -33,14 +34,18 @@ export default class App {
     private async configDB(dbname: string, userName: string, password: string, host: string, dialect: Dialect) {
         const seq = new Sequelize(dbname, userName, password, {
             host,
-            dialect
+            dialect,
+            ...config.dbconfig.meta
         });
-        try {
-            await seq.authenticate();
+        seq.authenticate().then(() => {
             console.log(chalk.green('Connection has been established successfully.'));
-        } catch (error) {
-            console.error(chalk.red('Unable to connect to the database:/n'), error);
-        }
+            new InitModels(seq)
+            seq.sync(config.dbconfig.sync).then(()=>{
+                console.log(chalk.green(`Models Are Synced ${config.dbconfig.sync?'By Force':''}`));
+            })
+        }).catch(e => {
+            console.error(chalk.red('Unable to connect to the database:/n'), e);
+        })
     }
     public listen() {
         this.app.listen(this.port, () => {

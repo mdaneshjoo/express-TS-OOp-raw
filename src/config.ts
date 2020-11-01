@@ -24,7 +24,11 @@ const config = {
         username: requiredEnv("DB_USERNAME"),
         password: requiredEnv('DB_PASSWORD'),
         host: requiredEnv('DB_HOST'),
-        driver: dbDriver
+        driver: dbDriver,
+        meta:{
+            logging:false,
+        },
+        sync:{force:true} // force true  drop table and make it again
     },
     port: process.env.PORT || 10000,
     host: process.env.HOST || '0.0.0.0'
