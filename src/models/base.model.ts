@@ -1,7 +1,10 @@
-import {Model } from 'sequelize'
+import {Model, DataTypes} from 'sequelize'
 
 export default class BaseModel extends Model {
-    public baseField = {
-
+    static baseFields = {
+        deletedAt:{
+            type:DataTypes.DATE,
+            allowNull:true
+        }
     }
 }

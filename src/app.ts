@@ -5,15 +5,22 @@ import { Sequelize, Dialect } from 'sequelize';
 import Router from './interfaces/router.interface'
 import InitModels from './models/init.model'
 import config from './config'
+import * as morgan from 'morgan'
+import * as bodyParser from "body-parser";
+import {errorHandler, notFoundPage} from "./middlewares/404Error.middleware";
+
 export default class App {
     private app: Application;
     private port: number;
-    constructor(private appConfig: { port; middlewares: any; router: Router[] },
+    constructor(private appConfig: { port; middlewares: any[]; router: Router[];funcMidd:any[] },
         private dbconfig: { database: string; username: string; password: string; host: string, driver: Dialect }) {
         this.port = appConfig.port
         this.app = express()
-        this.router(appConfig.router)
         this.middlewares(appConfig.middlewares)
+        this.router(appConfig.router)
+        this.middlewares2(appConfig.funcMidd)
+        // this.app.use(errorHandler)
+        // this.app.use(notFoundPage)
         this.configDB(dbconfig.database, dbconfig.username, dbconfig.password, dbconfig.host, dbconfig.driver)
     }
 
@@ -22,8 +29,13 @@ export default class App {
             this.app.use(middleWare)
         })
     }
+    private middlewares2(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
+        middleWares.forEach(middleWare => {
+            this.app.use(middleWare)
+        })
+    }
 
-    private router(routes: Router[]) {
+    public router(routes: Router[]) {
         routes.forEach((route) => {
             this.app.use(route.path, route.router)
         })
@@ -49,7 +61,7 @@ export default class App {
     }
     public listen() {
         this.app.listen(this.port, () => {
-            console.log(chalk.bgGreen(`Server runs in http://${process.env.HOST}:${this.port} MODE ${process.env.ENV}`));
+            console.log(chalk.blue(`Server runs in http://${process.env.HOST}:${this.port} MODE ${process.env.ENV}`));
         })
     }
 

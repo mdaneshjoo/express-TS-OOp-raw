@@ -27,6 +27,9 @@ const config = {
         driver: dbDriver,
         meta:{
             logging:false,
+            timestamp:true,
+            paranoid:true
+
         },
         sync:{force:true} // force true  drop table and make it again
     },

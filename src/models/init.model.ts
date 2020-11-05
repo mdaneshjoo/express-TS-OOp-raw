@@ -6,6 +6,7 @@ export default class ModelInit{
     private initModels(seqeulize) {
         const models = {
             User:User.init(seqeulize)
+            // more models here .........
         }
         for (const key in models) {
             const model = models[key];
