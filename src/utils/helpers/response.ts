@@ -1,16 +1,23 @@
-import {Request, Response, Router} from 'express'
+import { Response} from 'express'
 import eMessages from "../statics/eMessages";
-import ServerError from "../../errors/serverError";
+import config from "../../config";
 
-export const sendError = (entity?: string, code?: number) => {
-    if (entity) {
-        throw new ServerError(code || 404, entity)
-    }
-    throw new ServerError(404, eMessages.notFound)
+export const sendError = (res: Response) => (e?) => {
+    if (config.env === 'development') console.log(e)
+    res.status(e.code || 500).json({
+        status: 'error',
+        code: e.code || 500,
+        message: e.message || eMessages.notFound
+    })
 }
 
-export const success = (res: Response) => (entity) => {
+export const success = (res: Response) => (entity:object) => {
     if (entity)
-        res.send(entity)
-    sendError()
+        return res.json({
+            status: 'ok',
+            code: 200,
+            length:Object.keys(entity).length,
+            data: entity
+        })
+    sendError(res)
 }

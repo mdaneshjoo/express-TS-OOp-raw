@@ -1,35 +1,32 @@
 import * as express from 'express';
-import { Application } from 'express';
+import {Application} from 'express';
 const chalk = require('chalk');
-import { Sequelize, Dialect } from 'sequelize';
+import {Sequelize, Dialect} from 'sequelize';
 import Router from './interfaces/router.interface'
 import InitModels from './models/init.model'
 import config from './config'
-import * as morgan from 'morgan'
-import * as bodyParser from "body-parser";
-import {errorHandler, notFoundPage} from "./middlewares/404Error.middleware";
 
 export default class App {
     private app: Application;
     private port: number;
-    constructor(private appConfig: { port; middlewares: any[]; router: Router[];funcMidd:any[] },
-        private dbconfig: { database: string; username: string; password: string; host: string, driver: Dialect }) {
+
+    constructor(private appConfig: { port; middlewares: any[]; router: Router[]; funcMidd: any[] },
+                private dbconfig: { database: string; username: string; password: string; host: string, driver: Dialect }) {
         this.port = appConfig.port
         this.app = express()
-        this.middlewares(appConfig.middlewares)
+        this.mainMiddlewares(appConfig.middlewares)
         this.router(appConfig.router)
-        this.middlewares2(appConfig.funcMidd)
-        // this.app.use(errorHandler)
-        // this.app.use(notFoundPage)
+        this.thirdPartyMiddlewares(appConfig.funcMidd)
         this.configDB(dbconfig.database, dbconfig.username, dbconfig.password, dbconfig.host, dbconfig.driver)
     }
 
-    private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
+    private mainMiddlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
         middleWares.forEach(middleWare => {
             this.app.use(middleWare)
         })
     }
-    private middlewares2(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
+
+    private thirdPartyMiddlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
         middleWares.forEach(middleWare => {
             this.app.use(middleWare)
         })
@@ -52,16 +49,18 @@ export default class App {
         seq.authenticate().then(() => {
             console.log(chalk.green('Connection has been established successfully.'));
             new InitModels(seq)
-            seq.sync(config.dbconfig.sync).then(()=>{
-                console.log(chalk.green(`Models Are Synced ${config.dbconfig.sync?'By Force':''}`));
+            seq.sync(config.dbconfig.sync).then(() => {
+                console.log(chalk.green(`Models Are Synced ${config.dbconfig.sync.force ? 'By Force' : ''}`));
             })
         }).catch(e => {
             console.error(chalk.red('Unable to connect to the database:/n'), e);
         })
     }
+
+
     public listen() {
         this.app.listen(this.port, () => {
-            console.log(chalk.blue(`Server runs in http://${process.env.HOST}:${this.port} MODE ${process.env.ENV}`));
+            console.log(chalk.blue(`Server runs in http://${process.env.HOST}:${this.port} MODE ${config.env}`));
         })
     }
 

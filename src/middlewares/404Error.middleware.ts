@@ -1,9 +1,10 @@
 import ServerError from "../errors/serverError"
 import {Request, Response} from 'express'
 import config from "../config";
+import eMessages from "../utils/statics/eMessages";
 
 export const notFoundPage = (req: Request, res: Response, next) => {
-    next(new ServerError(404, 'destnation not found'))
+    next(new ServerError(eMessages.routeNotFound))
 }
 
 export const errorHandler = async (error, req, res, next) => {

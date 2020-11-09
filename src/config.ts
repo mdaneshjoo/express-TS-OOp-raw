@@ -1,4 +1,4 @@
-import { Dialect } from 'sequelize'
+import {Dialect} from 'sequelize'
 import * as dotenv from 'dotenv';
 import * as path from 'path'
 import ENVerror from './errors/envError'
@@ -19,23 +19,25 @@ const requiredEnv = (name) => {
 
 const config = {
     env: process.env.NODE_ENV || 'development',
+    secret: requiredEnv('SECRET'),
+    JWTexp: process.env.JWT_EXP || '1week',
     dbconfig: {
         database: requiredEnv('DB_NAME'),
         username: requiredEnv("DB_USERNAME"),
         password: requiredEnv('DB_PASSWORD'),
         host: requiredEnv('DB_HOST'),
         driver: dbDriver,
-        meta:{
-            logging:false,
-            timestamp:true,
-            paranoid:true
+        meta: {
+            logging: false,
+            timestamp: true,
+            paranoid: true
 
         },
-        sync:{force:true} // force true  drop table and make it again
+        sync: {force: false} // force true  drop table and make it again
     },
     port: process.env.PORT || 10000,
     host: process.env.HOST || '0.0.0.0'
 }
 
 
-export default { ...config }
+export default {...config}

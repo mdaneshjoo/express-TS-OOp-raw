@@ -8,6 +8,7 @@ export default class ModelInit{
             User:User.init(seqeulize)
             // more models here .........
         }
+
         for (const key in models) {
             const model = models[key];
             typeof model.associate === "function" && model.associate(models);

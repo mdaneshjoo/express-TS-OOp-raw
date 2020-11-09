@@ -1,8 +1,8 @@
-import {CreateOptions, DataTypes, InstanceUpdateOptions} from 'sequelize'
+import {CreateOptions, DataTypes, InstanceUpdateOptions, Op} from 'sequelize'
 import BaseModel from './base.model';
 import {HookReturn} from "sequelize/types/lib/hooks";
 import {Hash} from "../libs/hash";
-import eMessages from "../utils/statics/eMessages";
+
 
 export default class User extends BaseModel {
     static init(sequelize) {
@@ -38,32 +38,49 @@ export default class User extends BaseModel {
             ...super.baseFields,
 
         }, {
-            // Other model options go here
-            sequelize, // We need to pass the connection instance
+            sequelize,
             hooks: {
-                beforeCreate(user: User, options: CreateOptions): HookReturn {
-                    return new Hash().hashPasword(user._attributes.password).then(pass => {
-                        user._attributes.password = pass
+                beforeCreate(user: User, options) {
+                    const password = user.get('password').toString()
+                    return new Hash().hashPasword(password).then(hasedPass => {
+                        user.set('password', hasedPass)
                     })
                 },
                 beforeUpdate(user, options: InstanceUpdateOptions): HookReturn {
+                    const password = user.get('password').toString()
+                    return new Hash().hashPasword(password).then(hasedPass => {
+                        user.set('password', hasedPass)
+                    })
                 }
             }
         });
     }
-
-    static findByUsername(userName: string): Promise<any> {
+    id = this.get('id')
+    static findByUsername(userName: string,): Promise<any> {
         return User.findOne({
             where: {
                 userName
             },
-            raw: true
         })
+    }
+
+    static _findOrCreate(userName: string, body: object): Promise<any> {
+        return User.findOrCreate({
+            where: {
+                userName
+            }
+            , defaults: {...body}
+        })
+    }
+
+    display() {
+        let user = {}
+        const neededFileds = ['id', 'userName', 'email', 'phoneNumber', 'isPrivate']
+        neededFileds.map(field => {
+            user[field] = this.get(field)
+        })
+        return user
     }
 
 
 }
-
-
-
-

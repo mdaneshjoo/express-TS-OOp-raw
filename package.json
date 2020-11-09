@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "apidoc": {
+    "title": "College Rest api Doc",
+    "url": "https://0.0.0.0:10000/api/v1"
+  },
   "scripts": {
     "dev": "nodemon --watch \"src/**/*\" --ext \"ts .env json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/server.ts\"",
     "build": "tsc -p .",
-    "start": "npm run build && node dist/server.js"
+    "start": "npm run build && NODE_ENV=prud node dist/server.js  ",
+    "g:apidoc": "npx apidoc -i src/ -o apidoc/"
   },
   "author": "Em-djoo",
   "license": "ISC",
@@ -14,6 +19,8 @@
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
@@ -23,14 +30,18 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/cors": "^2.8.8",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.8",
+    "@types/joi": "^14.3.4",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/morgan": "^1.9.2",
     "@types/node": "^14.14.6",
     "@types/passport": "^1.0.4",
     "@types/passport-jwt": "^3.0.3",
     "@types/validator": "^13.1.0",
     "chalk": "^4.1.0",
+    "cors": "^2.8.5",
     "nodemon": "^2.0.6",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5"

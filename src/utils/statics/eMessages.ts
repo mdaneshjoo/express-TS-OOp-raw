@@ -1,8 +1,14 @@
 export default {
-    usernameNotProvide: 'username Not Provided',
-    notFound: 'Not found',
-    required: (item) => `${item} Is Required`,
-    emailBadInput:'Email format not acceptable',
-    phoneBadInput:'Phone Number format not acceptable',
+    usernameNotProvide: {message: 'username Not Provided', code: 400},
+    notFound: {message: 'Not found', code: 404},
+    routeNotFound: {message: 'Destination Not Exist', code: 404},
+    notAuthorized: {message:'You have not access to this part',code:401},
+    required: (item) => {
+        return {
+            message: `${item} Is Required`,
+            code: 400
+        }
+    },
+    userExist: {message: 'This User Name Or Email already exist', code: 400}
 }
 
