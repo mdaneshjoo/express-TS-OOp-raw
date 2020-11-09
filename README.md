@@ -1,0 +1,14 @@
+# express-TS
+
+env vars
+POR
+HOST
+DB_NAME
+DB_USERNAME
+DB_PASSWORD
+DB_HOST
+SECRET
+JWT_EXP
+
+
+
